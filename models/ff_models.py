@@ -29,7 +29,6 @@ class MNISTFFSingleLayer(nn.Module):
         self.model_graph.visual_graph
     # end plot_model
 
-
     def visualize_weights(self):
         os.makedirs('figs', exist_ok=True)
         dir_name = 'figs/MNIST_single_layer_weights'
