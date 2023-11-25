@@ -16,16 +16,19 @@ class ImageFFEncoder(nn.Module):
         self.num_layers = len(layer_sizes)
         self.input_size = image_size
         self.layers = []
-        input_and_layer_sizes = [np.prod(self.input_size)].extend(layer_sizes)
-        for i in range(len(input_and_layer_sizes)-1):
-            self.layers.append(nn.Linear(input_and_layer_sizes[i], input_and_layer_sizes[i+1]))
+        input_and_layer_sizes = [np.prod(self.input_size)]
+        input_and_layer_sizes.extend(layer_sizes)
+        self.layers = nn.ModuleList( [nn.Linear(input_and_layer_sizes[i], input_and_layer_sizes[i+1]) \
+                                    for i in range(len(input_and_layer_sizes)-1)] )
         # TODO: define intermediate and final activations from input arguments
         self.intermediate_activations = nn.ReLU()
         self.final_activation = nn.ReLU()
+        self.device = device("cuda" if cuda.is_available() else "cpu")
+        self.to(self.device)
     # end init
 
     def forward(self, image):
-        x = image.view(-1, np.prod(self.input_size))
+        x = image.view(-1, np.prod(self.input_size)).to(self.device)
         for i,layer in enumerate(self.layers):
             x = layer(x)
             # make sure only intermediate layers get intermediate activations
@@ -53,12 +56,16 @@ class ImageFFDecoder(nn.Module):
         self.input_size = (1, latent_size)
         self.image_size = image_size
         self.layers = []
-        input_and_layer_sizes = [latent_size].extend(layer_sizes).append(np.prod(self.image_size))
-        for i in range(len(input_and_layer_sizes)-1):
-            self.layers.append(nn.Linear(input_and_layer_sizes[i], input_and_layer_sizes[i+1]))
+        input_and_layer_sizes = [latent_size]
+        input_and_layer_sizes.extend(layer_sizes)
+        input_and_layer_sizes.append(np.prod(self.image_size))
+        self.layers = nn.ModuleList( [nn.Linear(input_and_layer_sizes[i], input_and_layer_sizes[i+1]) \
+                                    for i in range(len(input_and_layer_sizes)-1)] )
         # TODO: define intermediate and final activations from input arguments
         self.intermediate_activations = nn.ReLU()
         self.final_activation = nn.Sigmoid()
+        self.device = device("cuda" if cuda.is_available() else "cpu")
+        self.to(self.device)
     # end init
 
     def forward(self, image):
@@ -68,7 +75,7 @@ class ImageFFDecoder(nn.Module):
             # make sure only intermediate layers get intermediate activations
             if i < self.num_layers-1:
                 x = self.intermediate_activations(x)
-        return reshape(self.final_activation(x), self.image_size)
+        return reshape(self.final_activation(x), [-1] + list(self.image_size) )
     # end forward
 
     def summary(self):
@@ -88,10 +95,12 @@ class MNISTFFAE(nn.Module):
         self.input_size = image_size
         self.encoder = ImageFFEncoder()
         self.decoder = ImageFFDecoder()
+        self.device = device("cuda" if cuda.is_available() else "cpu")
+        self.to(self.device)
     # end init
 
     def forward(self, image):
-        x = self.encoder(x)
+        x = self.encoder(image.to(self.device))
         return self.decoder(x)
     # end forward
     
