@@ -49,6 +49,10 @@ class MNISTCNN(nn.Module):
 class MNISTCNNEncoder(nn.Module):
     def __init__(self):
         super(MNISTCNNEncoder, self).__init__()
+        # Increasing the channels, increases the accuracy "more quickly" than
+        # the model size is increased. This increase can be fine-tuned separately
+        # for the encoder and the decoder. This is the advantage of CNNs in
+        # comparison to FF when it comes to image processing.
         self.conv1 = nn.Conv2d(1, 32, kernel_size=5, stride=2) # 28x28 -> 12x12
         self.conv2 = nn.Conv2d(32, 64, kernel_size=5, stride=2) # 12x12 -> 4x4
         self.relu = nn.ReLU()
