@@ -53,8 +53,8 @@ class MNISTCNNEncoder(nn.Module):
         # the model size is increased. This increase can be fine-tuned separately
         # for the encoder and the decoder. This is the advantage of CNNs in
         # comparison to FF when it comes to image processing.
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=5, stride=2) # 28x28 -> 12x12
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=5, stride=2) # 12x12 -> 4x4
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=6, stride=2) # 28x28 -> 12x12
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=6, stride=2) # 12x12 -> 4x4
         self.relu = nn.ReLU()
         self.output_size = 1024 # 64x4x4 - to inform the main AE
         self.device = device("cuda" if cuda.is_available() else "cpu")
@@ -66,7 +66,7 @@ class MNISTCNNEncoder(nn.Module):
         x = self.relu( x )
         x = self.conv2( x )
         x = self.relu( x )
-        return x.reshape( -1, self.output_size ) # 16x4x4 = 256
+        return x.reshape( -1, self.output_size ) # 64x4x4 = 1024
     # end forward
 # end class MNISTCNNEncoder
 

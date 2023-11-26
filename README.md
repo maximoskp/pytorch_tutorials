@@ -27,6 +27,6 @@ bottleneck as FF (50) and with smaller model size (1MB compared to 4MB).
 See inside the code of models/cnn_models.py for details.
 
 TODO:
-- VAE CNN MNIST. https://github.com/lyeoni/pytorch-mnist-VAE/blob/master/pytorch-mnist-VAE.ipynb
+- VAE CNN MNIST. https://github.com/lyeoni/pytorch-mnist-VAE/blob/master/pytorch-mnist-VAE.ipynb Only change the encoder class, to produce two outputs (mu and sigma), the main AE class for sampling in the latent and the loss function in the running script. Decoder can stay the same.
 - VQVAE CNN MNIST. https://github.com/praeclarumjj3/VQ-VAE-on-MNIST
 - GANs CNN MNIST. https://github.com/Ksuryateja/DCGAN-MNIST-pytorch/blob/master/gan_mnist.py
