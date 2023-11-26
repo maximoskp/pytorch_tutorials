@@ -5,11 +5,13 @@ MNIST linear and conv2d:
 https://pythonguides.com/pytorch-mnist/
 
 Done:
-- MNIST with single layer and weight visualization
-- MNIST with two layers. TODO: use softmax at the end
-- CNN MNIST. Visualize filters?
-- AE FF MNIST.
-- AE CNN MNIST.
+- Classification:
+- - MNIST with single layer and weight visualization
+- - MNIST with two layers. (Actually, not done) TODO: use softmax at the end
+- - CNN MNIST. Visualize filters?
+- Autoencoders:
+- - AE FF MNIST.
+- - AE CNN MNIST.
 
 In all the above, add test set evaluation, possibly as a validation set.
 
