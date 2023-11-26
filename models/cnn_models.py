@@ -70,6 +70,33 @@ class MNISTCNNEncoder(nn.Module):
     # end forward
 # end class MNISTCNNEncoder
 
+class MNISTCNNVAEEncoder(nn.Module):
+    def __init__(self, latent_size=50):
+        super(MNISTCNNVAEEncoder, self).__init__()
+        # Increasing the channels, increases the accuracy "more quickly" than
+        # the model size is increased. This increase can be fine-tuned separately
+        # for the encoder and the decoder. This is the advantage of CNNs in
+        # comparison to FF when it comes to image processing.
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=6, stride=2) # 28x28 -> 12x12
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=6, stride=2) # 12x12 -> 4x4
+        self.relu = nn.ReLU()
+        self.output_size = 1024 # 64x4x4 - to inform the main AE
+        self.mu = nn.Linear(self.output_size, latent_size)
+        self.log_var = nn.Linear(self.output_size, latent_size)
+        self.device = device("cuda" if cuda.is_available() else "cpu")
+        self.to(self.device)
+    # end init
+
+    def forward(self, x):
+        x = self.conv1( x.to(self.device) )
+        x = self.relu( x )
+        x = self.conv2( x )
+        x = self.relu( x )
+        x.reshape( -1, self.output_size ) # 64x4x4 = 1024
+        return self.relu( self.mu(x) ) , self.relu(self.log_var(x))
+    # end forward
+# end class MNISTCNNVAEEncoder
+
 # decoders
 
 class MNISTCNNDecoder(nn.Module):
