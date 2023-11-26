@@ -43,3 +43,49 @@ class MNISTCNN(nn.Module):
         self.model_graph.visual_graph
     # end plot_model
 # end class MNISTCNN
+
+# encoders
+
+class MNISTCNNEncoder(nn.Module):
+    def __init__(self):
+        super(MNISTCNNEncoder, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=5, stride=2) # 28x28 -> 12x12
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=5, stride=2) # 12x12 -> 4x4
+        self.relu = nn.ReLU()
+        self.output_size = 1024 # 64x4x4 - to inform the main AE
+        self.device = device("cuda" if cuda.is_available() else "cpu")
+        self.to(self.device)
+    # end init
+
+    def forward(self, x):
+        x = self.conv1( x.to(self.device) )
+        x = self.relu( x )
+        x = self.conv2( x )
+        x = self.relu( x )
+        return x.reshape( -1, self.output_size ) # 16x4x4 = 256
+    # end forward
+# end class MNISTCNNEncoder
+
+# decoders
+
+class MNISTCNNDecoder(nn.Module):
+    def __init__(self, latent_size=50):
+        super(MNISTCNNDecoder, self).__init__()
+        self.from_latent = nn.Linear(latent_size, 1024) # 64x4x4
+        self.deconv1 = nn.ConvTranspose2d( 64, 32, kernel_size=6, stride=2 )
+        self.deconv2 = nn.ConvTranspose2d( 32, 1, kernel_size=6, stride=2 )
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+        self.device = device("cuda" if cuda.is_available() else "cpu")
+        self.to(self.device)
+    # end init
+
+    def forward(self, x):
+        x = self.from_latent( x.to(self.device) )
+        x = x.reshape( x.shape[0], 64, 4, 4 )
+        x = self.deconv1( x )
+        x = self.relu( x )
+        x = self.deconv2( x )
+        return self.sigmoid( x )
+    # end forward
+# end class MNISTCNNDecoder

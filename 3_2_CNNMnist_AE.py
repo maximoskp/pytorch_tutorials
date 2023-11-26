@@ -1,4 +1,4 @@
-from models.ae_models import MNISTFFAE
+from models.ae_models import MNISTCNNAE
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
@@ -14,7 +14,7 @@ batch_size = 100
 num_epochs = 10
 lr = 0.00001
 
-model = MNISTFFAE()
+model = MNISTCNNAE()
 
 # show model info
 print(model)
@@ -22,7 +22,7 @@ model.summary()
 model.plot_model()
 
 if load_saved_model:
-    model.load_state_dict(load('saved_models/MNIST_AE_FF.stdict'))
+    model.load_state_dict(load('saved_models/MNIST_AE_CNN.stdict'))
     model.eval()
     test_loader = None
 else:
@@ -78,7 +78,7 @@ else:
 
     # save model
     os.makedirs('saved_models', exist_ok=True)
-    save(model.state_dict(), 'saved_models/MNIST_AE_FF.stdict')
+    save(model.state_dict(), 'saved_models/MNIST_AE_CNN.stdict')
 # end else
 
 if test_loader is None:
