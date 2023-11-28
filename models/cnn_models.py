@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch.nn.functional as F
 from torchsummary import summary
 from torchview import draw_graph
 from torch import device, cuda
@@ -92,7 +93,7 @@ class MNISTCNNVAEEncoder(nn.Module):
         x = self.relu( x )
         x = self.conv2( x )
         x = self.relu( x )
-        x.reshape( -1, self.output_size ) # 64x4x4 = 1024
+        x = x.reshape( -1, self.output_size ) # 64x4x4 = 1024
         return self.relu( self.mu(x) ) , self.relu(self.log_var(x))
     # end forward
 # end class MNISTCNNVAEEncoder
@@ -120,3 +121,45 @@ class MNISTCNNDecoder(nn.Module):
         return self.sigmoid( x )
     # end forward
 # end class MNISTCNNDecoder
+
+# residual
+class Residual2DCNN(nn.Module):
+    def __init__(self, in_channels, num_hidden, num_residual_hidden):
+        super(Residual2DCNN, self).__init__()
+        self.block = nn.Sequencial(
+            nn.ReLU(True),
+            nn.Conv2d(
+                in_channels=in_channels,
+                out_channels=num_residual_hidden,
+                kernel_size=1, stride=1, padding=1, bias=False
+            ),
+            nn.ReLU(True),
+            nn.Conv2d(
+                in_channels=num_residual_hidden,
+                out_channels=num_hidden,
+                kernel_size=1, stride=1, bias=False
+            )
+        )
+    # end init
+
+    def forward(self, x):
+        return x + self.block(x)
+    # end forward
+# end class Residual2DCNN
+
+class ResidualStack2DCNN(nn.Module):
+    def __init__(self, in_channels, num_hidden, num_residual_layers, num_residual_hidden):
+        super(ResidualStack2DCNN, self).__init__()
+        self._num_residual_layers = num_residual_layers
+        self._layers = nn.ModuleList(
+            [Residual2DCNN(in_channels, num_hidden, num_residual_hidden)
+             for _ in range(self._num_residual_layers)]
+        )
+    # end init
+
+    def forward(self, x):
+        for i in range(self._num_residual_layers):
+            x = self._layers[i](x)
+        return F.relu(x)
+    # end forward
+# end class ResidualStack2DCNN

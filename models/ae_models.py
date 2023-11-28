@@ -90,7 +90,7 @@ class MNISTCNNVAE(nn.Module):
         summary(self, self.input_size)
     # end summary
 
-    def plot_model(self, name='MNIST_CNN_AE'):
+    def plot_model(self, name='MNIST_CNN_VAE'):
         self.model_graph = draw_graph(self, input_size=self.input_size, \
             expand_nested=True, graph_name=name, save_graph=True, directory='./figs')
         self.model_graph.visual_graph

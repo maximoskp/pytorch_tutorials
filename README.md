@@ -13,6 +13,8 @@ Done:
 - - AE FF MNIST.
 - - AE CNN MNIST.
 
+- VAE CNN MNIST. https://github.com/lyeoni/pytorch-mnist-VAE/blob/master/pytorch-mnist-VAE.ipynb Only change the encoder class, to produce two outputs (mu and sigma), the main AE class for sampling in the latent and the loss function in the running script. Decoder can stay the same.
+
 In all the above, add test set evaluation, possibly as a validation set.
 
 At some point, FF and CNN might need to get their own submodules,
@@ -27,6 +29,7 @@ bottleneck as FF (50) and with smaller model size (1MB compared to 4MB).
 See inside the code of models/cnn_models.py for details.
 
 TODO:
-- VAE CNN MNIST. https://github.com/lyeoni/pytorch-mnist-VAE/blob/master/pytorch-mnist-VAE.ipynb Only change the encoder class, to produce two outputs (mu and sigma), the main AE class for sampling in the latent and the loss function in the running script. Decoder can stay the same.
 - VQVAE CNN MNIST. https://github.com/praeclarumjj3/VQ-VAE-on-MNIST
+- - DONE: residual + block.
+- - TODO: Quantizers class in models and make both quantizers as shown in the reference colab
 - GANs CNN MNIST. https://github.com/Ksuryateja/DCGAN-MNIST-pytorch/blob/master/gan_mnist.py
